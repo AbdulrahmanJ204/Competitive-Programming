@@ -1,0 +1,93 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+#define int ll
+#define all(x) x.begin(),x.end()
+#define rall(x) x.rbegin(),x.rend()
+#define endl '\n'
+#define cendl cout<<endl
+#define cyes cout<<"YES"
+#define cno cout<<"NO"
+#define cin(v) for(ll i=0;i<v.size();i++)cin>>v[i];
+#define cin1(v,n) for(ll i=0;i<n;i++)cin>>v[i];
+#define cin2(v,n,m) for(ll i=0;i<n;i++) for (int j = 0; j < m; j++) cin>>v[i][j];
+#define tryAndCry(v) for(auto x : v){cout<<x<<" ";}cout<<"\n";
+#define cout1(v,n) for(ll i=0;i<n;i++)cout<<v[i]<<' '; cendl;
+#define cout2(v,n,m) for(ll i=0;i<n;i++,cendl) for (int j = 0; j < m; j++) cout<<v[i][j]<<' ';
+#define assign1(v,n,value) for(ll i=0;i<n;i++)v[i]=value;
+#define assign2(v,n,m,value) for(ll i=0;i<n;i++) for (int j = 0; j < m; j++) v[i][j]=value;
+#define unq(v) v.resize(distance(v.begin(),unique(all(v))));
+#define oo  LLONG_MAX;
+#define InTheNameOfAllah  ios_base::sync_with_stdio(0);cin.tie(0);
+
+void solve()
+{
+    ll x , y ;
+    cin>>x>>y;
+    string a, s;
+    a=to_string(x);
+    s=to_string(y);
+    
+
+    string ans="";
+    reverse(all(s));
+    reverse(all(a));
+    int i = 0 , j= 0;
+    int need = 0;
+   
+    string tmp="";
+    for (i = 0; i < a.size() && j<s.size(); i++ ,j++)
+    {
+      if(a[i]>s[j]){
+        string temp = "";
+        temp+=s[j];
+        j++;
+        if(j==s.size()){
+          cout<<-1;
+          return;
+        }
+        temp+=s[j];
+        reverse(all(temp));
+        int dif = stoll(temp)- a[i]+'0';
+        if(dif>9 || dif<=0){
+          cout<<-1;
+          return;
+        }
+        tmp+=dif+'0';
+      }
+      else tmp+=s[j]-a[i]+'0';
+      // cout<<tmp<<endl;
+    }
+  //  cout<<i<<endl;
+    if(i!=a.size()){
+      cout<<-1;
+      return;
+    }
+    while(j<s.size())tmp+=s[j] , j++;
+    // cout<<tmp;
+    reverse(all(tmp));
+    i=0;
+    while(tmp[i]=='0' && i<tmp.size()) i++;
+    if(i==tmp.size()){
+      cout<<0;
+      return;
+    }
+    while(i<tmp.size()) {cout<<tmp[i];i++;}
+
+  
+  return;
+}
+
+int32_t main() {
+    InTheNameOfAllah
+    //freopen("input.txt", "r", stdin);
+    //freopen("output.txt", "w", stdout);
+    ll t=1;
+    cin>>t;
+    while(t--){
+      solve();
+      cendl;
+    }
+    return 0;
+}
