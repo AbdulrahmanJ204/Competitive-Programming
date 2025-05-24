@@ -2,7 +2,7 @@
 using namespace std;
 
 #define ll long long
-#define int long long
+#define int ll
 #define all(x) x.begin(),x.end()
 #define rall(x) x.rbegin(),x.rend()
 #define endl '\n'
@@ -20,57 +20,15 @@ using namespace std;
 #define unq(v) v.resize(distance(v.begin(),unique(all(v))));
 #define oo  LLONG_MAX
 #define InTheNameOfAllah  ios_base::sync_with_stdio(0);cin.tie(0);
-int MOD  = 1e9+7;
-const int Z = 31;
-ll pow(ll x, ll n, ll mod) {
-    x %= mod;
-    ll res = 1;
-    while (n) {
-        if (n % 2) {
-            res = res * x % mod;
-        }
-        n /= 2;
-        x = x * x % mod;
-    }
-    return res;
-}
-
-ll inverse_mod(ll x, ll mod) {
-    x %= mod;
-    return pow(x, mod - 2, mod);
-}
-
-ll fact[Z], inv[Z];
-void pre() {
-    fact[0] = 1;
-    inv[0] = inverse_mod(fact[0], MOD);
-    for (ll i = 1; i < Z; i++) {
-        fact[i] = fact[i - 1] * i % MOD;
-        inv[i] = inverse_mod(fact[i], MOD);
-    }
-}
-
-ll nCr(ll n, ll r) {
-    if (n < r)
-        return 0;
-    return fact[n] * inv[n - r] % MOD * inv[r] % MOD;
-}
-
+#define gcd(a ,b) __gcd(a,b)
+#define lcm(a,b) a*b/gcd(a,b)
 void solve()
 {
-    int n,m,t;
-    pre();
-    cin>>n>>m>>t;
-    int ans =0;
-    for (int man = 4;  man <= n; man++)
-    { 
-      int woman = t-man;
-      if(woman >0)
-      ans+=nCr(n , man) * nCr(m , woman);
-    }
-    
-    
-    cout<<ans;
+    int a,b;
+    cin>>a>>b;
+    int lc = lcm(a,b);
+    int dif = lc/a - lc/b;
+    cout<<(abs(dif)<=1 ? "Equal" :(dif > 0 ? "Dasha":"Masha")  );
   return;
 }
 
