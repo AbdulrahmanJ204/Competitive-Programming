@@ -1,3 +1,5 @@
 /.cph
 /.vscode
 /.templates
+*.exe
+*.html
