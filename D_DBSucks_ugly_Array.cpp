@@ -5,7 +5,9 @@ using namespace std;
 #define int ll
 #define all(x) x.begin(),x.end()
 #define rall(x) x.rbegin(),x.rend()
-// #define endl '\n'
+#define gcd(a ,b) __gcd(a,b)
+#define lcm(a,b) a*b/gcd(a,b)
+#define endl '\n'
 #define cendl cout<<endl
 #define cyes cout<<"YES"
 #define cno cout<<"NO"
@@ -20,32 +22,63 @@ using namespace std;
 #define unq(v) v.resize(distance(v.begin(),unique(all(v))));
 #define oo  LLONG_MAX
 #define InTheNameOfAllah  ios_base::sync_with_stdio(0);cin.tie(0);
-
+vector<vector<int>>  factors;
+void sieveFactorization(int N) {
+  factors.resize(N+1);
+    for (int i = 2; i <= N; ++i) {
+        if (factors[i].empty()) { // If i is prime
+            for (int j = i; j <= N; j += i) {
+                factors[j].push_back(i);
+            }
+        }
+    }
+    
+}
 void solve()
 {
-    cout<<100<<" "<<100<<" "<<0<<endl;
-    for (int i = 0; i < 100; i++)
+    ll n;
+    cin>>n;
+    int m;cin>>m;
+    set<int> st;
+    set<int> fa;
+    for (int i = 0; i < n; i++)
     {
-      for (int j = 0; j < 100; j++)
-      {
-        cout<<0<<' ';
-      }cendl;
+      int x;
+      cin>>x;
+      if(st.count(x)) continue;
+      st.insert(x);
+      for(auto factor : factors[x]) fa.insert(factor);
+    }
+    
+    int ans =0;
+    
+    for (int i = 1; i <= m; i++)
+    {
+      
+      bool have =false;
+      for(auto fac : factors[i]){
+        if(fa.count(fac)) {have = true; break;}
+      }
+      ans+=!have;
       
     }
     
+    cout<<ans;
+    
+
   return;
 }
 
 int32_t main() {
     InTheNameOfAllah
     //freopen("input.txt", "r", stdin);
-    // freopen("output.txt", "w", stdout);
-    ll t=1;
-    //cin>>t;
+    //freopen("output.txt", "w", stdout);
+    int t;
+    cin>>t;
+    sieveFactorization(1e5);
     while(t--){
       solve();
       cendl;
-      cout.flush();
     }
     return 0;
 }

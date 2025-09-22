@@ -5,7 +5,9 @@ using namespace std;
 #define int ll
 #define all(x) x.begin(),x.end()
 #define rall(x) x.rbegin(),x.rend()
-// #define endl '\n'
+#define gcd(a ,b) __gcd(a,b)
+#define lcm(a,b) a*b/gcd(a,b)
+#define endl '\n'
 #define cendl cout<<endl
 #define cyes cout<<"YES"
 #define cno cout<<"NO"
@@ -23,15 +25,20 @@ using namespace std;
 
 void solve()
 {
-    cout<<100<<" "<<100<<" "<<0<<endl;
-    for (int i = 0; i < 100; i++)
-    {
-      for (int j = 0; j < 100; j++)
-      {
-        cout<<0<<' ';
-      }cendl;
-      
+    int a , b, c, d;
+    cin>>a>>b>>c>>d;
+    if((a <= c && d <= b)||(c<=a && b<=d)){
+      cout<<min(abs(d-c) , abs(a-b));
     }
+    else if((a<=c && c<=b)||(c<=b && b<=d)){
+      cout<<abs(c-b);
+    }
+    else if((a<=d && d<=b)||(c<=a && a<=d)){
+      cout<<abs(d-a);
+    }
+    
+    
+    else cout<<0;
     
   return;
 }
@@ -39,13 +46,12 @@ void solve()
 int32_t main() {
     InTheNameOfAllah
     //freopen("input.txt", "r", stdin);
-    // freopen("output.txt", "w", stdout);
+    //freopen("output.txt", "w", stdout);
     ll t=1;
-    //cin>>t;
+    cin>>t;
     while(t--){
       solve();
       cendl;
-      cout.flush();
     }
     return 0;
 }

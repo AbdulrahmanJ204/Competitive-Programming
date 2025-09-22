@@ -5,7 +5,9 @@ using namespace std;
 #define int ll
 #define all(x) x.begin(),x.end()
 #define rall(x) x.rbegin(),x.rend()
-// #define endl '\n'
+#define gcd(a ,b) __gcd(a,b)
+#define lcm(a,b) a*b/gcd(a,b)
+#define endl '\n'
 #define cendl cout<<endl
 #define cyes cout<<"YES"
 #define cno cout<<"NO"
@@ -23,29 +25,55 @@ using namespace std;
 
 void solve()
 {
-    cout<<100<<" "<<100<<" "<<0<<endl;
-    for (int i = 0; i < 100; i++)
+    ll n;
+    cin>>n;
+    int a[n];
+    cin1(a,n);
+    vector<int> adj[n];
+    for (int i = 1; i < n; i++)
     {
-      for (int j = 0; j < 100; j++)
-      {
-        cout<<0<<' ';
-      }cendl;
+        int u,v;
+        cin>>u>>v;
+        u-- , v--;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    int ans[n] , p[n];
+    
+    ans[0] = a[0];
+    int nMax[n] , pMax[n];
+    nMax[0] = -a[0];
+    pMax[0] = a[0];
+    
+    function<void(int,int)> dfs = [&]( int node , int par) -> void
+    {
       
+      for(auto child : adj[node]){
+        if(child == par) continue;
+        pMax[child] = max(a[child] , a[child]+ nMax[node]);
+        nMax[child] = max(-a[child] , -a[child]+ pMax[node]);
+        dfs(child , node);
+      }
+    };
+     dfs( 0 , -1);
+    for (int i = 0; i < n; i++)
+    {
+      cout<<pMax[i]<<" ";
     }
     
+
   return;
 }
 
 int32_t main() {
     InTheNameOfAllah
     //freopen("input.txt", "r", stdin);
-    // freopen("output.txt", "w", stdout);
+    //freopen("output.txt", "w", stdout);
     ll t=1;
-    //cin>>t;
+    cin>>t;
     while(t--){
       solve();
       cendl;
-      cout.flush();
     }
     return 0;
 }

@@ -5,7 +5,9 @@ using namespace std;
 #define int ll
 #define all(x) x.begin(),x.end()
 #define rall(x) x.rbegin(),x.rend()
-// #define endl '\n'
+#define gcd(a ,b) __gcd(a,b)
+#define lcm(a,b) a*b/gcd(a,b)
+#define endl '\n'
 #define cendl cout<<endl
 #define cyes cout<<"YES"
 #define cno cout<<"NO"
@@ -21,31 +23,36 @@ using namespace std;
 #define oo  LLONG_MAX
 #define InTheNameOfAllah  ios_base::sync_with_stdio(0);cin.tie(0);
 
+bool check(int a, int b){
+  int same = a&b , dif =a^b;
+  return same>=dif;
+}
 void solve()
 {
-    cout<<100<<" "<<100<<" "<<0<<endl;
-    for (int i = 0; i < 100; i++)
-    {
-      for (int j = 0; j < 100; j++)
-      {
-        cout<<0<<' ';
-      }cendl;
-      
-    }
-    
+  int n;
+  cin>>n;
+  int a[n];
+  cin1(a,n);
+  sort(a,a+n);
+  int l = 0 , r=0, ans = 1;
+  while(r<n){
+    if(check(a[l] ,a[r])) ans =max(r-l+1 , ans);
+    else l++;
+    r++;
+  }
+  cout<<ans;
   return;
 }
 
 int32_t main() {
     InTheNameOfAllah
     //freopen("input.txt", "r", stdin);
-    // freopen("output.txt", "w", stdout);
+    //freopen("output.txt", "w", stdout);
     ll t=1;
-    //cin>>t;
+    cin>>t;
     while(t--){
       solve();
       cendl;
-      cout.flush();
     }
     return 0;
 }

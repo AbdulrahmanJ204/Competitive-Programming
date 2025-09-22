@@ -1,13 +1,12 @@
-#include <bits/stdc++.h>
-#define ll long long
-using namespace std;
 // unique
 #define unq(v) v.resize(distance(v.begin(), unique(all(v))));
+#define InTheNameOfAllah ios_base::sync_with_stdio(0);cin.tie(0);
+
+freopen("text.in", "r", stdin);
+freopen("text.out", "w", stdout);
 
 // Graph Theory
-// TODO : add LIS and how to store lines using  m and c (y= mx + c) (L_Longue Lizard problem and another one in a gym name is Power Transmisson i guess )
-// TODO : add LCS code.
-const int z = 0; // number of vertices (nodes)
+// dfs
 vector<int> graph[z];
 bool visited[z];
 void dfs(int node) {
@@ -15,6 +14,22 @@ void dfs(int node) {
     for (auto child : graph[node])
         if (!visited[child])
             dfs(child);
+    // we can use timeIn[N] , and a global timer to check for cycles
+}
+// it might be useful to also compute the entry and exit times and vertex color.
+vector<int> color;
+vector<int> time_in, time_out;
+int dfs_timer = 0;
+
+void dfs(int v)
+{
+    time_in[v] = dfs_timer++;
+    color[v] = 1;
+    for (int u : adj[v])
+        if (color[u] == 0)
+            dfs(u);
+    color[v] = 2;
+    time_out[v] = dfs_timer++;
 }
 
 // find tree diameter (longest path)
@@ -31,28 +46,6 @@ void dfs(int i, int cnt) {
         first = i, mx = cnt;
 }
 
-class dfsWithTime {
-    // Another DFS with Time.
-    vector<vector<int>> graph; // adjacency list representation
-    int n;                     // number of vertices
-
-    vector<int> color;
-    // 0-> not visited
-    // 1-> visited
-    // 2-> exit
-    vector<int> time_in, time_out;
-    int dfs_timer = 0;
-
-    void dfs(int v) {
-        time_in[v] = dfs_timer++;
-        color[v] = 1;
-        for (int u : graph[v])
-            if (color[u] == 0)
-                dfs(u);
-        color[v] = 2;
-        time_out[v] = dfs_timer++;
-    }
-} int parent[z];
 void bfs(int src) {
     queue<int> q;
     q.push(src);
@@ -67,44 +60,17 @@ void bfs(int src) {
             }
     }
 }
-
-void bfs2() {
-    // BFS
-    vector<vector<int>> graph; // adjacency list representation
-    int n;                     // number of nodes
-    int s;                     // source vertex
-    queue<int> q;
-    vector<bool> visited(n, -1);
-    vector<int> d(n, 0), p(n, -1);
-
-    q.push(s);
-    used[s] = true;
-    p[s] = -1;
-    while (!q.empty()) {
-        int v = q.front();
-        q.pop();
-        for (int u : graph[v]) {
-            if (!visited[u]) {
-                visited[u] = true;
-                q.push(u);
-                d[u] = d[v] + 1;
-                p[u] = v;
-            }
-        }
-    }
-
-    // Print Path
-    if (!visited[u]) {
-        cout << "No path!";
-    } else {
-        vector<int> path;
-        for (int v = u; v != -1; v = p[v])
-            path.push_back(v);
-        reverse(path.begin(), path.end());
-        cout << "Path: ";
-        for (int v : path)
-            cout << v << " ";
-    }
+// Print Path
+if (!visited[u]) {
+    cout << "No path!";
+} else {
+    vector<int> path;
+    for (int v = u; v != -1; v = parent[v])
+        path.push_back(v);
+    reverse(path.begin(), path.end());
+    cout << "Path: ";
+    for (int v : path)
+        cout << v << " ";
 }
 
 void bfs01() {
@@ -112,7 +78,6 @@ void bfs01() {
     int n;
     vector<pair<int, int>> graph[n]; // pair <node, weight>
     vector<int> dist(n, INF);        // could be <pair<int,int> if we have some constrains
-
     dist[s] = 0;
     deque<int> q; // could be pair
     q.push_front(s);
@@ -200,10 +165,8 @@ void dijkstra(int s, vector<int> &d, vector<int> &p) {
             if (!u[j] && (v == -1 || d[j] < d[v]))
                 v = j;
         }
-
         if (d[v] == INF)
             break;
-
         u[v] = true;
         for (auto edge : graph[v]) {
             int to = edge.first;
@@ -225,51 +188,210 @@ vector<int> restore_path(int s, int t, vector<int> const &p) {
     return path;
 }
 
-class DSU {
-
-private:
-    vector<int> p, size;
-    bool pathCompress;
-
-public:
-    DSU(int n, bool pathCompress = true) {
-        p.resize(n + 1, 0);
-        size.resize(n + 1, 0);
-        for (int i = 1; i <= n; i++) {
-            p[i] = i;
-            size[i] = 1;
+// dijkstra
+void dijkstra(int s)
+{
+    d[s] = 0;
+    priority_queue<pll> q;
+    q.push({-0, s});
+    while (!q.empty())
+    {
+        pair<int ,int> v = q.top();
+        q.pop();
+        v.first *= -1;
+        if (d[v.second] < v.first)
+            continue;
+        for (int i = 0; i < g[v.second].size(); i++)
+        {
+            ll to = g[v.second][i].first;
+            ll len = g[v.second][i].second;
+            if (d[to] > d[v.second] + len)
+            {
+                d[to] = d[v.second] + len;
+                p[to] = v.second;
+                q.push({-d[to], to});
+            }
         }
-        this->pathCompress = pathCompress;
     }
-
-    int find(int x) {
-        if (x == p[x])
-            return x;
-        int y = find(p[x]);
-        if (this->pathCompress)
-            p[x] = y;
-        return y;
+}
+// ford warshale algorithm
+// to know all shortest paths with positive wights
+for (int k = 0; k < n; ++k)
+{
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < n; ++j)
+        {
+            d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+        }
     }
+}
+// find K-th Ancestor using binary lifting
+void dfs(int u, int p = 0, int d = 0)
+{
+    depth[u] = d;
+    up[0][u] = p;
+    for (int i = 0; i < g[u].size(); i++)
+        if (g[u][i] != p)
+            dfs(g[u][i], u, d + 1);
+}
+void Buildup(int root)
+{
+    dfs(root);
+    for (int i = 1; i < 20; i++)
+        for (int j = 1; j <= n; j++)
+            up[i][j] = up[i - 1][up[i - 1][j]];
+}
+int FindKthAncestor(int u, int k)
+{
+    if (depth[u] < k || k < 0)
+        return -1;
+    for (int i = 19; i >= 0; i--)
+        if (k & (1 << i))
+            u = up[i][u];
+    return u;
+}
 
-    void merge(int a, int b) {
+// LCA
+int Lca(int u, int v)
+{
+    if (depth[u] < depth[v])
+        swap(u, v);
+    u = FindKthAncestor(u, depth[u] - depth[v]);
+    if (u == v)
+        return u;
+    for (int i = 19; i >= 0; i--)
+        if (up[i][u] != up[i][v])
+        {
+            u = up[i][u];
+            v = up[i][v];
+        }
+    return up[0][u];
+}
 
-        a = find(a);
-        b = find(b);
-        if (a == b)
-            return;
+// Euler tour
+int tin[N], tout[N], timer;
+void dfs(int u = 1, int p = 0)
+{
+    tin[u] = ++timer;
+    for (int i = 0; i < g[u].size(); i++)
+        if (g[u][i] != p)
+            dfs(g[u][i], u);
+    tout[u] = timer; // or tout[u]=++timer;
+}
 
-        if (size[a] < size[b])
-            swap(a, b);
+// check if u ancestor of v using euler tour
+bool is_ancestor(int u, int v)
+{
+    return tin[u] <= tin[v] && tout[u] >= tout[v];
+}
 
-        p[b] = a;
-        size[a] += size[b];
-        size[b] = 0;
+// Lca using euler tour
+void dfs(int u = 1, int p = 1)
+{
+    tin[u] = ++timer;
+    up[u][0] = p;
+    for (int i = 1; i < 20; ++i)
+        up[u][i] = up[up[u][i - 1]][i - 1];
+    for (int i = 0; i < g[u].size(); i++)
+        if (g[u][i] != p)
+            dfs(g[u][i], u);
+    tout[u] = ++timer;
+}
+int Lca(int u, int v)
+{
+    if (is_ancestor(u, v))
+        return u;
+    if (is_ancestor(v, u))
+        return v;
+    for (int i = 19; i >= 0; --i)
+    {
+        if (!is_ancestor(up[u][i], v))
+            u = up[u][i];
     }
+    return up[u][0];
+}
 
-    int Size(int u) {
-        return size[find(u)];
+// Calculate length from node to another
+int Length(int u, int v)
+{
+    int lca = Lca(u, v);
+    return depth[u] + depth[v] - 2 * depth[lca];
+}
+
+
+// Count the number of paths that pass through a node in a tree
+
+vector<vector<ll>>tree(1e5+10);
+vector<ll> vis(1e5+10);
+vector<ll> porduct(1e6+10);
+int dfs(int node);
+vector<ll> nodes(1e6+10);
+vector<ll> ans(1e6+10);
+vector<ll> num_of_pathes(1e6+10);
+int n;
+int main(){
+    cin>>n;
+    forn(int i=0;i<n-1;i++){
+        ll u,v; cin>>u>>v;
+        tree[u].pb(v);
+        tree[v].pb(u);
     }
-};
+    dfs(1);
+
+    int t;
+    cin>>t;
+    forn(int i=0;i<t;i++){
+        ll node; cin>>node;
+        cout<<"number of pathes through "<<node<<endl;
+        cout<<ans[node]+n-1<<endl;
+    }
+}
+int dfs(int node){
+    if(vis[node]) return 0 ;
+    vis[node]=1;
+    ll prod=0;
+    ll sum=0;
+    for(auto l:tree[node]){
+        ll tmp=dfs(l);
+
+        if(tmp!=0){
+            prod+=sum*tmp;
+        }
+        sum+=tmp;
+    }
+    porduct[node]=prod;
+    nodes[node]=sum;
+    ans[node]=porduct[node]+(n-1-nodes[node])*nodes[node];
+    num_of_pathes[node]=ans[node]+n-1;
+    return 1+sum;
+
+}
+
+// dsu on trees
+map<int, int> *cnt[maxn];
+void dfs(int v, int p){
+    int mx = -1, bigChild = -1;
+    for(auto u : g[v])
+       if(u != p){
+           dfs(u, v);
+           if(sz[u] > mx)
+               mx = sz[u], bigChild = u;
+       }
+    if(bigChild != -1)
+        cnt[v] = cnt[bigChild];
+    else
+        cnt[v] = new map<int, int> ();
+    (*cnt[v])[ col[v] ] ++;
+    for(auto u : g[v])
+       if(u != p && u != bigChild){
+           for(auto x : *cnt[u])
+               (*cnt[v])[x.first] += x.second;
+       }
+    //now (*cnt[v])[c] is the number of vertices in subtree of vertex v that has color c. You can answer the queries easily.
+
+}
+
 
 struct DSU {
     int cnt;
@@ -298,57 +420,29 @@ struct DSU {
     }
 };
 
-
-template<typename T, T (*op)(T, T)>
-struct SparseTable {
-    vector<vector<T>> ST;
-    int n;
-    SparseTable(const vector<T>& a) {
-        n = a.size();
-        int maxLog = 32 - __builtin_clz(n);
-        ST.resize(n, vector<T>(maxLog));
-        for (int i = 0; i < n; i++) ST[i][0] = a[i];
-        for (int j = 1; (1 << j) <= n; j++)
-            for (int i = 0; i + (1 << j) - 1 < n; i++)
-                ST[i][j] = op(ST[i][j - 1], ST[i + (1 << (j - 1))][j - 1]);
-    }
-
-    T query(int l, int r) {
-        int len = r - l + 1;
-        int k = (31 ^ __builtin_clz(len));
-        return op(ST[l][k], ST[r - (1 << k) + 1][k]);
-    }
-};
-
-int op(int a, int b){
-    return min(a, b);
-}
-SparseTable<int, op> s(v);
-
-
 // Math & number Theory
-int gcd(int a, int b) {
-    if (!b)
+// extended gcd
+ExtendedGcd(ll a, ll b, ll &x, ll &y)
+{
+    if (b == 0)
+    {
+        x = 1;
+        y = 0;
         return a;
-    return (b, a % b);
+    }
+    ll x1, y1;
+    ll g = ExtendedGcd(b, a % b, x1, y1);
+    x = y1;
+    y = x1 - y1 * (a / b);
+    return g;
 }
+
 // GCD and LCM
 int gcd(int a, int b) {
     return b ? gcd(b, a % b) : a;
 }
 
 int lcm(int a, int b) { return a / gcd(a, b) * b; }
-//------------------------------------------------------------//
-// functions to get the gcd and lcm for whole numbers in the array
-int lcm(vector<int> &numbers) {
-    return accumulate(numbers.begin(), numbers.end(), 1,
-                      [](int x, int y) { return (x * y) / gcd(x, y); });
-}
-
-int gcd(vector<int> &numbers) {
-    return accumulate(numbers.begin(), numbers.end(), 0,
-                      [](int x, int y) { return gcd(x, y); });
-}
 //------------------------------------------------------------//
 // ax+by=c , one solutoin
 pair<int, int> extendedEuclidean(int a, int b) {
@@ -372,7 +466,6 @@ pair<int, int> solveLinearDiophantine(int a, int b, int c) {
 }
 
 // Divisors And Factorization
-
 vector<vector<int>>
 divisorSieve(int N) {
     vector<vector<int>> divisors(N + 1);
@@ -496,6 +589,61 @@ for (ll i = 2; i < M; i++) {
         }
     }
 }
+
+// check number if prime in log n
+using u64 = uint64_t;
+using u128 = __uint128_t;
+
+u64 binpower(u64 base, u64 e, u64 mod)
+{
+    u64 result = 1;
+    base %= mod;
+    while (e)
+    {
+        if (e & 1)
+            result = (u128)result * base % mod;
+        base = (u128)base * base % mod;
+        e >>= 1;
+    }
+    return result;
+}
+
+bool check_composite(u64 n, u64 a, u64 d, int s)
+{
+    u64 x = binpower(a, d, n);
+    if (x == 1 || x == n - 1)
+        return false;
+    for (int r = 1; r < s; r++)
+    {
+        x = (u128)x * x % n;
+        if (x == n - 1)
+            return false;
+    }
+    return true;
+};
+
+bool MillerRabin(u64 n, int iter = 5)
+{ // returns true if n is probably prime, else returns false.
+    if (n < 4)
+        return n == 2 || n == 3;
+
+    int s = 0;
+    u64 d = n - 1;
+    while ((d & 1) == 0)
+    {
+        d >>= 1;
+        s++;
+    }
+
+    for (int i = 0; i < iter; i++)
+    {
+        int a = 2 + rand() % (n - 3);
+        if (check_composite(n, a, d, s))
+            return false;
+    }
+    return true;
+}
+
 //   Sum, Evens, Odds, power, Mod
 int EvenSum_1_to_n(int n) {
     if (n % 2 == 1)
@@ -576,95 +724,6 @@ int inv_mod(int a) {
 }
 
 ll div(ll a, ll b) { return a * inv_mod(b) % mod; }
-
-//------------------------------------------------------------//
-ll fastPower_base2(ll x) {
-    return (ll)1 << x;
-}
-//------------------------------------------------------------//
-ll countDivisions(ll n, ll d) {
-    ll count = 0;
-    while (n > 1 && n % d == 0) {
-        n = n / d;
-        count++;
-    }
-    return count;
-}
-//------------------------------------------------------------//
-int fib(int n) {
-    int a = 0;
-    int b = 1;
-    for (int i = 0; i < n; i++) {
-        int tmp = a + b;
-        a = b;
-        b = tmp;
-    }
-    return a;
-}
-void generateSubsets(int n) {
-    for (int mask = 0; mask < (1 << n); ++mask)
-        for (int i = 0; i < n; ++i)
-            if (mask & (1 << i)) {
-                // Element i is in the subset
-            }
-}
-
-//------------------------------------------------------------//
-void decToBinary(int n) {
-    // array to store binary number
-    int binaryNum[32];
-
-    // counter for binary array
-    int i = 0;
-    while (n > 0) {
-
-        // storing remainder in binary array
-        binaryNum[i] = n % 2;
-        n = n / 2;
-        i++;
-    }
-
-    // printing binary array in reverse order
-    for (int j = i - 1; j >= 0; j--)
-        cout << binaryNum[j];
-}
-//------------------------------------------------------------//
-// Function to multiply two matrices
-vector<vector<ll>> multiplyMatrices(vector<vector<ll>> &A,
-                                    vector<vector<ll>> &B) {
-    int n = A.size();
-    vector<vector<ll>> C(n, vector<ll>(n, 0));
-
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-
-            for (int k = 0; k < n; k++)
-                C[i][j] = (C[i][j] + (A[i][k] * B[k][j]) % MOD) % MOD;
-
-    return C;
-}
-vector<vector<ll>> matrixExponentiation(vector<vector<ll>> &A, ll n) {
-    int size = A.size();
-    vector<vector<ll>> result(size, vector<ll>(size, 0));
-    for (int i = 0; i < size; i++)
-        result[i][i] = 1;
-    while (n > 0) {
-        if (n % 2 == 1) {
-            result = multiplyMatrices(result, A);
-        }
-        A = multiplyMatrices(A, A);
-        n /= 2;
-    }
-    return result;
-}
-ll fibonacciModulo(ll n) {
-    if (n == 0)
-        return 0;
-    vector<vector<ll>> A = {{1, 1}, {1, 0}};
-    vector<vector<ll>> result = matrixExponentiation(A, n - 1);
-    return result[0][0];
-}
-// function to find th n fibonacci number with mod for n<=18
 
 // ------------------Counting principals--------------------
 
@@ -879,49 +938,283 @@ int lengthOfLIS(vector<int> &nums) {
     return ans.size();
 }
 
-//------------Orderd Set Headers-----------------
-#include <ext/pb_ds/assoc_container.hpp>
-// Header files, namespaces,
-// macros as defined above
+//------------Orderd Set, Unorder_set , unorderd_map ,cHash-----------------
+#include<ext/pb_ds/assoc_container.hpp>
+#include<ext/pb_ds/tree_policy.hpp>
 using namespace __gnu_pbds;
+const double PI = acos(-1.0);
+
+struct chash {
+    const uint64_t C = uint64_t(2e18 * PI) + 71;
+    const uint32_t RANDOM = chrono::steady_clock::now().time_since_epoch().count();
+    size_t operator()(uint64_t x) const {
+        return __builtin_bswap64((x ^ RANDOM) * C);
+    }
+};
 // less to set and less_equal to multiset
-#define ordered_set tree<ll, null_type, less_equal<ll>, rb_tree_tag, tree_order_statistics_node_update>
-// declare : ordered_set st ; st.insert(y);
-
-// Code
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-using namespace __gnu_pbds;
-template <typename T>
-using o_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
-
-const ll N = 1e6 + 10, MOD = (ll)1e9 + 7, OO = (ll)1e17 + 10;
-
-void solve() {
-
-    o_set<int> se;
-    se.insert(1);
-    se.insert(2);
-    cout << *se.find_by_order(0) << endl; /// k th element
-    cout << se.order_of_key(2) << endl;   /// number of elements less than k
-    s.erase(s.find_by_order(s.order_of_key(a[i])));
-}
-
-// --------text input ------------
-// freopen("text.in", "r", stdin);
-// freopen("text.out", "w", stdout);
+template <typename T> using o_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+template <typename T, typename R> using o_map = tree<T, R, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+template <class A, class B> using cmap = unordered_map<A, B, chash>;
+template <class A, class B> using cset = unordered_set<A, B, chash>;
+template <class A, class B> using ht = gp_hash_table<A, B, chash>;
 
 int main() {
+    
+    o_set<int>se;
+    se.insert(1);
+    se.insert(2);
+    cout << *se.find_by_order(0) << endl; ///k th element
+    cout << se.order_of_key(2) << endl; ///number of elements less than k
+    s.erase(s.find_by_order(s.order_of_key(a[i])));
+    
+    o_map<int, int>mp;
+    mp.insert({1, 10});
+    mp.insert({2, 20});
+    cout << mp.find_by_order(0)->second << endl; ///k th element
+    cout << mp.order_of_key(2) << endl; ///number of first elements less than k
+
+    cmap<int, int> mp;
+    ht<int, int> t;
+
     return 0;
 }
-// ____________Links________________
-// https://oeis.org/A000045  // can use to find facts about series of number , Mostafa Saad.
-// geoGebra for 2d represintation.
-// https://csacademy.com/app/graph_editor/  // graph editor.
+// some DS
+template <typename T, T (*op)(T, T)>
+struct SparseTable {
+    vector<vector<T>> ST;
+    int n;
+    SparseTable(const vector<T> &a) {
+        n = a.size();
+        int maxLog = 32 - __builtin_clz(n);
+        ST.resize(n, vector<T>(maxLog));
+        for (int i = 0; i < n; i++)
+            ST[i][0] = a[i];
+        for (int j = 1; (1 << j) <= n; j++)
+            for (int i = 0; i + (1 << j) - 1 < n; i++)
+                ST[i][j] = op(ST[i][j - 1], ST[i + (1 << (j - 1))][j - 1]);
+    }
 
-// AtCoder Library: https://codeforces.com/blog/entry/82400
-//  cp-algorithms: https://cp-algorithms.com/
-//  kactl: https://github.com/kth-competitive-pr...
-//  Benq's library: https://github.com/bqi343/USACO
-//  Colin Galen library: https://github.com/galencolin/cp-temp...
-//  A cool online judge to test library code: https://judge.yosupo.jp/
+    T query(int l, int r) {
+        int len = r - l + 1;
+        int k = (31 ^ __builtin_clz(len));
+        return op(ST[l][k], ST[r - (1 << k) + 1][k]);
+    }
+};
+
+int op(int a, int b) {
+    return min(a, b);
+}
+SparseTable<int, op> s(v);
+// base index is 0
+#define log(x) (31 ^ __builtin_clz(x))
+template <typename T>
+struct Sparse {
+    int N, LOGN;
+    vector<vector<T>> sp;
+    Sparse(int n) {
+        N = n;
+        LOGN = 1 + log(n);
+        sp.resize(LOGN);
+        for (int i = 0; i < sp.size(); i++) {
+            sp[i].resize(N);
+        }
+    }
+    void build(vector<ll> &A) {
+        for (int i = 0; i < N; i++)
+            sp[0][i] = A[i];
+        for (int j = 1; j < LOGN; j++) {
+            for (int i = 0; i + (1 << j) - 1 < N; i++) {
+                sp[j][i] = min(sp[j - 1][i], sp[j - 1][i + (1 << (j - 1))]);
+            }
+        }
+    }
+    T query(int l, int r) {
+        int k = log(r - l + 1);
+        return min(sp[k][l], sp[k][r - (1 << k) + 1]);
+    }
+};
+
+#define lft 2 * x, lx, (lx + rx) / 2
+#define rt 2 * x + 1, (lx + rx) / 2 + 1, rx
+ll seg_sz;
+// base index is 1
+template <typename T>
+struct SEG {
+    vector<T> tree;
+    T neutral = 0;
+
+    int size;
+    SEG(int n) : size(1) {
+        seg_sz = n;
+        while (size <= n)
+            size *= 2;
+        tree.assign(2 * size, neutral);
+    }
+
+    T merge(T a, T b) {
+        return a + b;
+    }
+
+    T build(vector<ll> &a, int x = 1, int lx = 1, int rx = seg_sz) {
+        // put value in node
+        if (lx == rx)
+            return tree[x] = a[lx];
+        return tree[x] = merge(build(a, lft), build(a, rt));
+    }
+
+    T set(int i, ll v, int x = 1, int lx = 1, int rx = seg_sz) {
+        if (rx == lx) {
+            // put value in node
+            tree[x] = v;
+            return tree[x];
+        }
+        int mid = (lx + rx) / 2;
+        if (i <= mid)
+            set(i, v, lft);
+        else
+            set(i, v, rt);
+
+        return tree[x] = merge(tree[2 * x], tree[2 * x + 1]);
+    }
+
+    T query(int l, int r, int x = 1, int lx = 1, int rx = seg_sz) {
+        if (r < lx || rx < l)
+            return neutral;
+        if (l <= lx && rx <= r)
+            return tree[x];
+        return merge(query(l, r, lft), query(l, r, rt));
+    }
+};
+#define lft 2 * x, lx, (lx + rx) / 2
+#define rt 2 * x + 1, (lx + rx) / 2 + 1, rx
+int seg_sz;
+template <typename T>
+struct SEG {
+    vector<T> tree, lazy;
+    T neutral = 0;
+
+    int size;
+    SEG(int n) : size(1) {
+        seg_sz = n;
+        while (size <= n)
+            size *= 2;
+        tree.assign(2 * size, neutral);
+        lazy.assign(2 * size, neutral);
+    }
+
+    T merge(T a, T b) {
+        return a + b;
+    }
+
+    T build(vector<ll> &a, int x = 1, int lx = 1, int rx = seg_sz) {
+        if (lx == rx)
+            return tree[x] = a[lx];
+        return tree[x] = merge(build(a, lft), build(a, rt));
+    }
+
+    void push(int x, int lx, int rx) {
+        if (lazy[x] == 0 || lx == rx)
+            return;
+        int mid = (lx + rx) / 2;
+        tree[2 * x] = (mid - lx + 1) * lazy[x];
+        tree[2 * x + 1] = (rx - (mid + 1) + 1) * lazy[x];
+        lazy[2 * x] += lazy[x];
+        lazy[2 * x + 1] += lazy[x];
+        lazy[x] = 0;
+    }
+
+    T upd(int l, int r, ll val, int x = 1, int lx = 1, int rx = seg_sz) {
+        if (r < lx || rx < l)
+            return tree[x];
+        if (l <= lx && rx <= r) {
+            tree[x] += val * (rx - lx + 1);
+            lazy[x] += val;
+            return tree[x];
+        }
+        push(x, lx, rx);
+        return tree[x] = merge(upd(l, r, val, lft), upd(l, r, val, rt));
+    }
+
+    T set(int i, int v, int x = 1, int lx = 1, int rx = seg_sz) {
+        if (rx == lx) {
+            tree[x] = v;
+            return tree[x];
+        }
+        int mid = (lx + rx) / 2;
+        if (i <= mid)
+            set(i, v, lft);
+        else
+            set(i, v, rt);
+
+        return tree[x] = merge(tree[2 * x], tree[2 * x + 1]);
+    }
+
+    T query(int l, int r, int x = 1, int lx = 1, int rx = seg_sz) {
+        if (r < lx || rx < l)
+            return neutral;
+        if (l <= lx && rx <= r)
+            return tree[x];
+        push(x, lx, rx);
+        return merge(query(l, r, lft), query(l, r, rt));
+    }
+};
+// Minimum spanning tree (MST)
+
+const int N = 1e5; // max value to number of nodes
+
+vector<pair<int, int>> MST[N];
+vector<pair<pair<int, int>, int>> Edges;
+int n, m;
+ll cost;
+
+void Kruskal()
+{
+    DSU dsu(n);
+    vector<pair<pair<int, int>, int>> edges;
+
+    for (int i = 0; i < m; i++)
+    {
+        int v, u, w;
+        cin >> u >> v >> w;
+        edges.push_back({{w, u}, v});
+    }
+
+    sort(edges.begin(), edges.end());
+
+    for (int i = 0; i < m; i++)
+    {
+        int v, u, w;
+        w = edges[i].first.first;
+        u = edges[i].first.second;
+        v = edges[i].second;
+        if (dsu.getParent(u) != dsu.getParent(v))
+        {
+            Edges.push_back({{u, v}, w});
+            MST[u].push_back({v, w});
+            MST[v].push_back({u, w});
+            cost += 1ll * w;
+            dsu.union_(u, v);
+        }
+    }
+}
+
+//================================================================================================
+
+// ternary search
+
+double ternary_search(double l, double r)
+{
+    for (int i = 0; i < 1000; i++)
+    {
+        double m1 = l + (r - l) / 3;
+        double m2 = r - (r - l) / 3;
+        double f1 = f(m1); // evaluates the function at m1
+        double f2 = f(m2); // evaluates the function at m2
+        if (f1 < f2)       //(f1 > f2) if i want min
+            l = m1;
+        else
+            r = m2;
+    }
+    return f(l); // return the maximum of f(x) in [l, r]
+}
+
