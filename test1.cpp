@@ -1,31 +1,76 @@
 #include <bits/stdc++.h>
-using namespace std;
-#define test  int t;cin>>t;while(t--)
-#define ll long long
-#define all(x) x.begin(),x.end()
-#define rall(x) x.rbegin(),x.rend()
-#define endl '\n'
-#define cendl cout<<endl
-#define cyes cout<<"YES"<<endl
-#define cno cout<<"NO"<<endl
-#define cin(v) for(ll i=0;i<v.size();i++)cin>>v[i];
-#define unq(v) v.resize(distance(v.begin(),unique(all(v))));
-#define tryAndCry(v) for(auto x : v){cout<<x<<" ";}cout<<"\n";
-#define InTheNameOfAllah  ios_base::sync_with_stdio(0);cin.tie(0);
+    using namespace std;
+    int main()
+    {
+        ios::sync_with_stdio(false);
+        cin.tie(0);
+        cout.tie(0);
+        int t;
+        cin>>t;
+        while(t--)
+        {
+            int n, k;
+            cin >> n>>k;
+            string s;
+            cin >>s;
+            string s2="",s3="",s4="";
+            bool hmm = false;
+            if(k%2==0)
+            {
+                sort(s.begin(),s.end());
+                hmm = true;
+            }
+            else
+            {
+                string s2="",s3="",s4="";
+                for (int i=0;i<n;i++)
+                {
+                    if(i%2==0)
+                        s2 +=s[i];
+                    else
+                        s3 +=s[i];
 
-void solve()
-{
-  wprintf(L"Teh Isolated Form: %lc ", L'ﺕ');
-  return;
-}
+                }
+                sort(s2.begin(),s2.end());
+                sort(s3.begin(),s3.end());
+                bool hm=false;
+                if (s2[0]<s3[0])
+                {
+                    hm=true;
+                }
+                if(hm)
+               {
+                   for(int i=0;i<n;i++){
+                        if(i < s2.size())
+                            s4 +=s2[i];
+                        if(i < s3.size())
+                            s4 +=s3[i];
 
-int main() {
-    InTheNameOfAllah
-    ll t=1;
-    //cin>>t;
-    while(t--){
-      solve();
-      cendl;
+
+                }
+                }
+                else
+                {
+                   for(int i=0;i<n;i++){
+                        if(i< s3.size())
+                            s4 +=s3[i];
+                        if(i<s2.size())
+                            s4 +=s2[i];
+
+                }
+               }
+
+
+            }
+            
+            
+            if(hmm)
+                cout <<s<<endl;
+            else
+                cout <<s4<<endl;
+
+
+        }
+
+        return 0;
     }
-    return 0;
-}

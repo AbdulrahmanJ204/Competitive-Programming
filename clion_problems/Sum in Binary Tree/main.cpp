@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define test  int t;cin>>t;while(t--)
+#define ll long long
+#define endl '\n'
+#define cendl cout<<endl
+#define cyes cout<<"YES"<<endl
+#define cno cout<<"NO"<<endl
+#define InTheNameOfAllah  ios_base::sync_with_stdio(0);cin.tie(0);
+
+
+int main() {
+    InTheNameOfAllah
+    test {
+    ll n;
+    cin>>n;
+    ll ans=1;
+    while(n>=1)
+    {
+        if(n==1)
+            break;
+        if(n%2==0)
+        {
+            ans+=n;
+            n/=2;
+        }
+        else
+        {
+
+            ans+=n;
+            n--;
+            n/=2;
+        }
+    }
+    cout<<ans<<endl;
+    }
+    return 0;
+}
